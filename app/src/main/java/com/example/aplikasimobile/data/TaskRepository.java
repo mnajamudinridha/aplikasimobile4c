@@ -10,7 +10,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Satu-satunya pintu akses ke Firebase Realtime Database untuk data tugas.
@@ -80,5 +82,24 @@ public class TaskRepository {
         DatabaseReference newRef = tasksRef.push();
         task.id = newRef.getKey();
         return newRef.setValue(task);
+    }
+
+    /**
+     * Memperbarui seluruh field tugas (PRD FR-3). {@code updatedAt} disetel ke waktu sekarang.
+     */
+    public com.google.android.gms.tasks.Task<Void> update(@NonNull Task task) {
+        task.updatedAt = System.currentTimeMillis();
+        return tasksRef.child(task.id).setValue(task);
+    }
+
+    /**
+     * Partial update status selesai (PRD FR-4) — hanya menulis {@code completed} + {@code updatedAt}
+     * via {@code updateChildren()}, sehingga field lain tidak tertimpa.
+     */
+    public com.google.android.gms.tasks.Task<Void> setCompleted(@NonNull String id, boolean completed) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("completed", completed);
+        updates.put("updatedAt", System.currentTimeMillis());
+        return tasksRef.child(id).updateChildren(updates);
     }
 }

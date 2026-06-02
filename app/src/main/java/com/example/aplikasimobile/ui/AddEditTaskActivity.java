@@ -1,6 +1,7 @@
 package com.example.aplikasimobile.ui;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -33,6 +34,14 @@ public class AddEditTaskActivity extends AppCompatActivity {
     };
     private static final int DEFAULT_PRIORITY_INDEX = 1; // medium
 
+    public static final String EXTRA_TASK_ID = "extra_task_id";
+    public static final String EXTRA_TITLE = "extra_title";
+    public static final String EXTRA_DESCRIPTION = "extra_description";
+    public static final String EXTRA_PRIORITY = "extra_priority";
+    public static final String EXTRA_COMPLETED = "extra_completed";
+    public static final String EXTRA_DUE_DATE = "extra_due_date";
+    public static final String EXTRA_CREATED_AT = "extra_created_at";
+
     private final TaskRepository repository = new TaskRepository();
     private final SimpleDateFormat dateFormat =
             new SimpleDateFormat("dd MMM yyyy", new Locale("id", "ID"));
@@ -44,7 +53,10 @@ public class AddEditTaskActivity extends AppCompatActivity {
     private MaterialButton btnClearDue;
     private MaterialButton btnSave;
 
-    private Long dueDate; // nullable
+    private Long dueDate;          // nullable
+    private String editingTaskId;  // null = mode tambah, selain itu = mode edit
+    private long editingCreatedAt;
+    private boolean editingCompleted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +84,36 @@ public class AddEditTaskActivity extends AppCompatActivity {
         });
         btnSave.setOnClickListener(v -> save());
 
+        prefillIfEditing();
         renderDueDate();
+    }
+
+    /** Bila dibuka dengan {@code EXTRA_TASK_ID}, isi form dengan data tugas (mode EDIT — FR-3). */
+    private void prefillIfEditing() {
+        Intent intent = getIntent();
+        if (intent == null || !intent.hasExtra(EXTRA_TASK_ID)) {
+            return; // mode tambah
+        }
+        editingTaskId = intent.getStringExtra(EXTRA_TASK_ID);
+        editingCreatedAt = intent.getLongExtra(EXTRA_CREATED_AT, System.currentTimeMillis());
+        editingCompleted = intent.getBooleanExtra(EXTRA_COMPLETED, false);
+
+        setTitle(R.string.title_edit_task);
+        inputTitle.setText(intent.getStringExtra(EXTRA_TITLE));
+        inputDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
+        spinnerPriority.setSelection(indexForPriority(intent.getStringExtra(EXTRA_PRIORITY)));
+        if (intent.hasExtra(EXTRA_DUE_DATE)) {
+            dueDate = intent.getLongExtra(EXTRA_DUE_DATE, 0L);
+        }
+    }
+
+    private int indexForPriority(String priority) {
+        for (int i = 0; i < PRIORITY_VALUES.length; i++) {
+            if (PRIORITY_VALUES[i].equals(priority)) {
+                return i;
+            }
+        }
+        return DEFAULT_PRIORITY_INDEX;
     }
 
     private void showDatePicker() {
@@ -114,7 +155,16 @@ public class AddEditTaskActivity extends AppCompatActivity {
         btnSave.setEnabled(false);
         // Optimistic: tutup form segera. RTDB mengantri tulisan saat offline & listener
         // real-time di MainActivity memperbarui daftar dari cache lokal (FR-6).
-        repository.create(task).addOnFailureListener(e ->
+        com.google.android.gms.tasks.Task<Void> op;
+        if (editingTaskId == null) {
+            op = repository.create(task);                 // CREATE (FR-1)
+        } else {
+            task.id = editingTaskId;                      // UPDATE (FR-3)
+            task.createdAt = editingCreatedAt;            // pertahankan waktu dibuat
+            task.completed = editingCompleted;            // pertahankan status selesai
+            op = repository.update(task);
+        }
+        op.addOnFailureListener(e ->
                 Toast.makeText(getApplicationContext(),
                         getString(R.string.error_save_task, e.getMessage()),
                         Toast.LENGTH_LONG).show());

@@ -30,8 +30,18 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskViewHolder> {
     private static final SimpleDateFormat DATE_FORMAT =
             new SimpleDateFormat("dd MMM yyyy", new Locale("id", "ID"));
 
-    public TaskAdapter() {
+    /** Aksi item yang diteruskan ke {@code MainActivity}. */
+    public interface OnTaskInteractionListener {
+        void onToggleCompleted(@NonNull Task task, boolean completed);
+
+        void onEditTask(@NonNull Task task);
+    }
+
+    private final OnTaskInteractionListener listener;
+
+    public TaskAdapter(@NonNull OnTaskInteractionListener listener) {
         super(DIFF_CALLBACK);
+        this.listener = listener;
     }
 
     private static final DiffUtil.ItemCallback<Task> DIFF_CALLBACK =
@@ -62,7 +72,7 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        holder.bind(getItem(position));
+        holder.bind(getItem(position), listener);
     }
 
     static class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -81,7 +91,7 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskViewHolder> {
             textDueDate = itemView.findViewById(R.id.text_due_date);
         }
 
-        void bind(@NonNull Task task) {
+        void bind(@NonNull Task task, @NonNull OnTaskInteractionListener listener) {
             textTitle.setText(task.title);
 
             // Deskripsi: sembunyikan baris bila kosong.
@@ -101,9 +111,16 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskViewHolder> {
                 textDueDate.setVisibility(View.GONE);
             }
 
-            // Status selesai (interaktif mulai M3).
+            // Status selesai. Lepas listener dulu sebelum setChecked agar tidak terpicu
+            // oleh view daur-ulang (recycle), lalu pasang kembali.
+            checkCompleted.setOnCheckedChangeListener(null);
             checkCompleted.setChecked(task.completed);
             applyStrikethrough(task.completed);
+            checkCompleted.setOnCheckedChangeListener(
+                    (buttonView, isChecked) -> listener.onToggleCompleted(task, isChecked));
+
+            // Ketuk item → buka form edit (FR-3).
+            itemView.setOnClickListener(v -> listener.onEditTask(task));
 
             // Indikator warna prioritas.
             priorityIndicator.setBackgroundColor(
