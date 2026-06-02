@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Aplikasi Mobile</string>
+
+    <!-- Daftar tugas (M1) -->
+    <string name="empty_tasks">Belum ada tugas.\nTekan tombol + untuk menambah tugas pertamamu.</string>
+    <string name="due_prefix">Tenggat: %1$s</string>
+    <string name="error_load_tasks">Gagal memuat tugas: %1$s</string>
 </resources>
