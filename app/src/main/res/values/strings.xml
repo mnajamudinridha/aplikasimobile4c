@@ -9,6 +9,7 @@
     <!-- Tambah/Edit tugas (M2) -->
     <string name="action_add_task">Tambah tugas</string>
     <string name="title_add_task">Tambah Tugas</string>
+    <string name="title_edit_task">Edit Tugas</string>
     <string name="hint_title">Judul</string>
     <string name="hint_description">Deskripsi (opsional)</string>
     <string name="label_priority">Prioritas</string>

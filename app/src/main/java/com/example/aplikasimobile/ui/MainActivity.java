@@ -48,13 +48,41 @@ public class MainActivity extends AppCompatActivity {
         emptyView = findViewById(R.id.empty_view);
         progressBar = findViewById(R.id.progress);
 
-        adapter = new TaskAdapter();
+        adapter = new TaskAdapter(new TaskAdapter.OnTaskInteractionListener() {
+            @Override
+            public void onToggleCompleted(@NonNull Task task, boolean completed) {
+                repository.setCompleted(task.id, completed).addOnFailureListener(e ->
+                        Toast.makeText(MainActivity.this,
+                                getString(R.string.error_save_task, e.getMessage()),
+                                Toast.LENGTH_LONG).show());
+            }
+
+            @Override
+            public void onEditTask(@NonNull Task task) {
+                openEdit(task);
+            }
+        });
         recyclerTasks.setLayoutManager(new LinearLayoutManager(this));
         recyclerTasks.setAdapter(adapter);
 
         FloatingActionButton fabAdd = findViewById(R.id.fab_add);
         fabAdd.setOnClickListener(v ->
                 startActivity(new Intent(this, AddEditTaskActivity.class)));
+    }
+
+    /** Buka form dalam mode EDIT dengan data tugas terisi (FR-3). */
+    private void openEdit(@NonNull Task task) {
+        Intent intent = new Intent(this, AddEditTaskActivity.class);
+        intent.putExtra(AddEditTaskActivity.EXTRA_TASK_ID, task.id);
+        intent.putExtra(AddEditTaskActivity.EXTRA_TITLE, task.title);
+        intent.putExtra(AddEditTaskActivity.EXTRA_DESCRIPTION, task.description);
+        intent.putExtra(AddEditTaskActivity.EXTRA_PRIORITY, task.priority);
+        intent.putExtra(AddEditTaskActivity.EXTRA_COMPLETED, task.completed);
+        intent.putExtra(AddEditTaskActivity.EXTRA_CREATED_AT, task.createdAt);
+        if (task.dueDate != null) {
+            intent.putExtra(AddEditTaskActivity.EXTRA_DUE_DATE, (long) task.dueDate);
+        }
+        startActivity(intent);
     }
 
     @Override
