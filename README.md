@@ -48,5 +48,5 @@ di-apply kondisional), tetapi **untuk menjalankan app** kamu perlu file konfigur
 - [x] **M1** — Read: daftar tugas real-time
 - [x] **M2** — Create: tambah tugas
 - [x] **M3** — Update & toggle selesai
-- [ ] **M4** — Delete
+- [x] **M4** — Delete
 - [ ] **M5** — Polish (sorting, warna, error handling)

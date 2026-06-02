@@ -102,4 +102,9 @@ public class TaskRepository {
         updates.put("updatedAt", System.currentTimeMillis());
         return tasksRef.child(id).updateChildren(updates);
     }
+
+    /** Menghapus tugas dari {@code tasks/{id}} (PRD FR-5). */
+    public com.google.android.gms.tasks.Task<Void> delete(@NonNull String id) {
+        return tasksRef.child(id).removeValue();
+    }
 }

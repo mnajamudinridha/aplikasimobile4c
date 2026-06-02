@@ -8,7 +8,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -64,10 +66,52 @@ public class MainActivity extends AppCompatActivity {
         });
         recyclerTasks.setLayoutManager(new LinearLayoutManager(this));
         recyclerTasks.setAdapter(adapter);
+        attachSwipeToDelete();
 
         FloatingActionButton fabAdd = findViewById(R.id.fab_add);
         fabAdd.setOnClickListener(v ->
                 startActivity(new Intent(this, AddEditTaskActivity.class)));
+    }
+
+    /** Pasang gesture geser-untuk-hapus pada daftar (FR-5). */
+    private void attachSwipeToDelete() {
+        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(
+                0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView,
+                                  @NonNull RecyclerView.ViewHolder viewHolder,
+                                  @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getBindingAdapterPosition();
+                if (position == RecyclerView.NO_POSITION) {
+                    return;
+                }
+                confirmDelete(adapter.getCurrentList().get(position), position);
+            }
+        };
+        new ItemTouchHelper(callback).attachToRecyclerView(recyclerTasks);
+    }
+
+    /** Dialog konfirmasi sebelum menghapus (AC FR-5). Batal → kembalikan item yang ter-swipe. */
+    private void confirmDelete(@NonNull Task task, int position) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.confirm_delete_title)
+                .setMessage(getString(R.string.confirm_delete_message, task.title))
+                .setPositiveButton(R.string.action_delete, (dialog, which) ->
+                        repository.delete(task.id).addOnFailureListener(e -> {
+                            adapter.notifyItemChanged(position);
+                            Toast.makeText(MainActivity.this,
+                                    getString(R.string.error_delete_task, e.getMessage()),
+                                    Toast.LENGTH_LONG).show();
+                        }))
+                .setNegativeButton(R.string.action_cancel,
+                        (dialog, which) -> adapter.notifyItemChanged(position))
+                .setOnCancelListener(dialog -> adapter.notifyItemChanged(position))
+                .show();
     }
 
     /** Buka form dalam mode EDIT dengan data tugas terisi (FR-3). */
