@@ -2,6 +2,7 @@ package com.example.aplikasimobile.data;
 
 import androidx.annotation.NonNull;
 
+import com.example.aplikasimobile.BuildConfig;
 import com.example.aplikasimobile.model.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,8 +24,9 @@ import java.util.Map;
  */
 public class TaskRepository {
 
+    // URL eksplisit (region asia-southeast1) — harus sama dengan App.onCreate().
     private final DatabaseReference tasksRef =
-            FirebaseDatabase.getInstance().getReference("tasks");
+            FirebaseDatabase.getInstance(BuildConfig.RTDB_URL).getReference("tasks");
 
     /** Callback hasil pembacaan real-time node {@code tasks}. */
     public interface TasksListener {

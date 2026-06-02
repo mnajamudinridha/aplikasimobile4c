@@ -32,7 +32,12 @@ di-apply kondisional), tetapi **untuk menjalankan app** kamu perlu file konfigur
 3. Unduh **`google-services.json`**, simpan di folder **`app/`**.
    - File ini sudah masuk `.gitignore` (jangan di-commit). Lihat template
      [`app/google-services.json.example`](app/google-services.json.example).
-4. Di Console → **Build → Realtime Database → Create Database** (pilih lokasi).
+4. Di Console → **Build → Realtime Database → Create Database**.
+   - Database project ini ada di region **`asia-southeast1`**. URL-nya sudah dikonfigurasi di
+     `app/build.gradle` sebagai `BuildConfig.RTDB_URL`
+     (`https://aplikasimobile-5b0e2-default-rtdb.asia-southeast1.firebasedatabase.app`).
+   - ⚠️ Karena bukan region default `us-central1`, kode memakai `FirebaseDatabase.getInstance(RTDB_URL)`.
+     Jika kamu memakai database/region berbeda, **ubah `RTDB_URL` di `app/build.gradle`**.
 5. Tab **Rules**, tempel isi [`database.rules.json`](database.rules.json) (mode dev, terbuka).
    > ⚠️ Rules dev membuat database terbuka. Hanya untuk belajar/dev — lihat PRD §8.2 untuk produksi.
 6. Build & run dari Android Studio.
@@ -49,4 +54,4 @@ di-apply kondisional), tetapi **untuk menjalankan app** kamu perlu file konfigur
 - [x] **M2** — Create: tambah tugas
 - [x] **M3** — Update & toggle selesai
 - [x] **M4** — Delete
-- [ ] **M5** — Polish (sorting, warna, error handling)
+- [x] **M5** — Polish (sorting, warna, error handling)

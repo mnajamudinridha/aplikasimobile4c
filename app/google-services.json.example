@@ -4,8 +4,8 @@
   "//2": "Lalu simpan sebagai app/google-services.json (sudah masuk .gitignore).",
   "project_info": {
     "project_number": "000000000000",
-    "project_id": "ganti-dengan-project-id-anda",
-    "firebase_url": "https://ganti-dengan-project-id-anda-default-rtdb.firebaseio.com"
+    "project_id": "aplikasimobile-5b0e2",
+    "firebase_url": "https://aplikasimobile-5b0e2-default-rtdb.asia-southeast1.firebasedatabase.app"
   },
   "client": [
     {
