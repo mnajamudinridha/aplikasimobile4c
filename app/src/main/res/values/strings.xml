@@ -21,6 +21,13 @@
     <string name="error_title_required">Judul wajib diisi</string>
     <string name="error_save_task">Gagal menyimpan: %1$s</string>
 
+    <!-- Hapus tugas (M4) -->
+    <string name="confirm_delete_title">Hapus tugas?</string>
+    <string name="confirm_delete_message">Hapus \"%1$s\"? Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="action_delete">Hapus</string>
+    <string name="action_cancel">Batal</string>
+    <string name="error_delete_task">Gagal menghapus: %1$s</string>
+
     <string-array name="priority_labels">
         <item>Rendah</item>
         <item>Sedang</item>
