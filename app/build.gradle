@@ -13,6 +13,11 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // URL Firebase Realtime Database. WAJIB diisi karena database berada di region
+        // asia-southeast1 (bukan us-central1 default) — FirebaseDatabase.getInstance() tanpa
+        // argumen akan menunjuk ke instance default yang salah.
+        buildConfigField "String", "RTDB_URL", "\"https://aplikasimobile-5b0e2-default-rtdb.asia-southeast1.firebasedatabase.app\""
     }
 
     buildTypes {

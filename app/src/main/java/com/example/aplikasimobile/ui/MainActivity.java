@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -18,9 +17,13 @@ import com.example.aplikasimobile.R;
 import com.example.aplikasimobile.data.TaskRepository;
 import com.example.aplikasimobile.model.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -31,6 +34,21 @@ import java.util.List;
  */
 public class MainActivity extends AppCompatActivity {
 
+    /**
+     * Urutan tampilan (PRD FR-2): tugas <b>belum selesai</b> di atas, lalu <b>prioritas</b>
+     * (high → low), lalu <b>terbaru</b> (createdAt desc).
+     */
+    private static final Comparator<Task> TASK_ORDER = (a, b) -> {
+        if (a.completed != b.completed) {
+            return a.completed ? 1 : -1;                       // belum selesai dulu
+        }
+        int byPriority = Integer.compare(b.priorityWeight(), a.priorityWeight());
+        if (byPriority != 0) {
+            return byPriority;                                 // high → low
+        }
+        return Long.compare(b.createdAt, a.createdAt);         // terbaru dulu
+    };
+
     private TaskRepository repository;
     private TaskAdapter adapter;
     private ValueEventListener tasksListener;
@@ -38,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerTasks;
     private TextView emptyView;
     private ProgressBar progressBar;
+    private FloatingActionButton fabAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +73,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onToggleCompleted(@NonNull Task task, boolean completed) {
                 repository.setCompleted(task.id, completed).addOnFailureListener(e ->
-                        Toast.makeText(MainActivity.this,
-                                getString(R.string.error_save_task, e.getMessage()),
-                                Toast.LENGTH_LONG).show());
+                        showError(getString(R.string.error_save_task, e.getMessage())));
             }
 
             @Override
@@ -68,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerTasks.setAdapter(adapter);
         attachSwipeToDelete();
 
-        FloatingActionButton fabAdd = findViewById(R.id.fab_add);
+        fabAdd = findViewById(R.id.fab_add);
         fabAdd.setOnClickListener(v ->
                 startActivity(new Intent(this, AddEditTaskActivity.class)));
     }
@@ -104,9 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.action_delete, (dialog, which) ->
                         repository.delete(task.id).addOnFailureListener(e -> {
                             adapter.notifyItemChanged(position);
-                            Toast.makeText(MainActivity.this,
-                                    getString(R.string.error_delete_task, e.getMessage()),
-                                    Toast.LENGTH_LONG).show();
+                            showError(getString(R.string.error_delete_task, e.getMessage()));
                         }))
                 .setNegativeButton(R.string.action_cancel,
                         (dialog, which) -> adapter.notifyItemChanged(position))
@@ -137,16 +152,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTasksChanged(@NonNull List<Task> tasks) {
                 showLoading(false);
-                adapter.submitList(tasks);
-                showEmpty(tasks.isEmpty());
+                List<Task> sorted = new ArrayList<>(tasks);
+                Collections.sort(sorted, TASK_ORDER);
+                adapter.submitList(sorted);
+                showEmpty(sorted.isEmpty());
             }
 
             @Override
             public void onError(@NonNull DatabaseError error) {
                 showLoading(false);
-                Toast.makeText(MainActivity.this,
-                        getString(R.string.error_load_tasks, error.getMessage()),
-                        Toast.LENGTH_LONG).show();
+                showError(getString(R.string.error_load_tasks, error.getMessage()));
             }
         });
     }
@@ -167,5 +182,14 @@ public class MainActivity extends AppCompatActivity {
     private void showEmpty(boolean empty) {
         emptyView.setVisibility(empty ? View.VISIBLE : View.GONE);
         recyclerTasks.setVisibility(empty ? View.GONE : View.VISIBLE);
+    }
+
+    /** Tampilkan pesan error sebagai Snackbar, di-anchor di atas FAB (FR-7). */
+    private void showError(@NonNull String message) {
+        Snackbar snackbar = Snackbar.make(recyclerTasks, message, Snackbar.LENGTH_LONG);
+        if (fabAdd != null) {
+            snackbar.setAnchorView(fabAdd);
+        }
+        snackbar.show();
     }
 }

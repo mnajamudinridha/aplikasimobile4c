@@ -22,7 +22,8 @@ public class App extends Application {
         super.onCreate();
         try {
             // Wajib dipanggil SEKALI, sebelum getReference()/operasi RTDB lain.
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            // Pakai URL eksplisit (region asia-southeast1) — harus sama dengan TaskRepository.
+            FirebaseDatabase.getInstance(BuildConfig.RTDB_URL).setPersistenceEnabled(true);
         } catch (Exception e) {
             // Bisa terjadi bila google-services.json belum ditambahkan (FirebaseApp belum terinisialisasi)
             // atau database sudah terlanjur dipakai. Lihat README.md → Setup Firebase.

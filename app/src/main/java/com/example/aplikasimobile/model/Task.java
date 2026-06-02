@@ -42,6 +42,17 @@ public class Task {
         this.updatedAt = now;
     }
 
+    /** Bobot prioritas untuk pengurutan (high &gt; medium &gt; low). Tidak ditulis ke RTDB. */
+    @Exclude
+    public int priorityWeight() {
+        if (PRIORITY_HIGH.equals(priority)) {
+            return 3;
+        } else if (PRIORITY_LOW.equals(priority)) {
+            return 1;
+        }
+        return 2; // medium / default
+    }
+
     /** Map field untuk partial update via {@code updateChildren()} (dipakai mulai M3). */
     @Exclude
     public Map<String, Object> toMap() {
