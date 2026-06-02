@@ -45,7 +45,7 @@ di-apply kondisional), tetapi **untuk menjalankan app** kamu perlu file konfigur
 
 ## Status Milestone (PRD §12)
 - [x] **M0** — Setup Firebase, dependensi, offline persistence
-- [ ] **M1** — Read: daftar tugas real-time
+- [x] **M1** — Read: daftar tugas real-time
 - [ ] **M2** — Create: tambah tugas
 - [ ] **M3** — Update & toggle selesai
 - [ ] **M4** — Delete
