@@ -1,0 +1,32 @@
+{
+  "//": "TEMPLATE — JANGAN dipakai langsung. Unduh file asli dari Firebase Console:",
+  "//1": "Project Settings > Your apps > Android app (com.example.aplikasimobile) > google-services.json",
+  "//2": "Lalu simpan sebagai app/google-services.json (sudah masuk .gitignore).",
+  "project_info": {
+    "project_number": "000000000000",
+    "project_id": "ganti-dengan-project-id-anda",
+    "firebase_url": "https://ganti-dengan-project-id-anda-default-rtdb.firebaseio.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+        "android_client_info": {
+          "package_name": "com.example.aplikasimobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "GANTI_DENGAN_API_KEY_ANDA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

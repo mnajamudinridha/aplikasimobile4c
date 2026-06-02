@@ -1,0 +1,20 @@
+{
+  "//": "Rules MODE DEV (tanpa login) sesuai PRD §8.1. Database TERBUKA untuk siapa pun.",
+  "//warning": "JANGAN dipakai di produksi. Untuk produksi gunakan Firebase Auth + rules per-uid (PRD §8.2).",
+  "rules": {
+    "tasks": {
+      ".read": true,
+      ".write": true,
+      "$taskId": {
+        ".validate": "newData.hasChildren(['title', 'createdAt'])",
+        "title": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 100" },
+        "description": { ".validate": "newData.isString() && newData.val().length <= 500" },
+        "priority": { ".validate": "newData.isString() && newData.val().matches(/^(low|medium|high)$/)" },
+        "completed": { ".validate": "newData.isBoolean()" },
+        "dueDate": { ".validate": "newData.isNumber() || newData.val() == null" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "updatedAt": { ".validate": "newData.isNumber()" }
+      }
+    }
+  }
+}

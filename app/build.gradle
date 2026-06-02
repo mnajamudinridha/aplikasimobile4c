@@ -31,7 +31,23 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'com.google.android.material:material:1.4.0'
+
+    // Firebase Realtime Database — BoM mengelola versi antar-library Firebase secara konsisten.
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-database'
+
+    // UI daftar
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}
+
+// Firebase: apply plugin google-services HANYA jika google-services.json ada.
+// Dengan begitu proyek tetap bisa di-compile sebelum kamu menambahkan file konfigurasi
+// Firebase milikmu sendiri (lihat README.md → Setup Firebase).
+if (file('google-services.json').exists()) {
+    apply plugin: 'com.google.gms.google-services'
 }
