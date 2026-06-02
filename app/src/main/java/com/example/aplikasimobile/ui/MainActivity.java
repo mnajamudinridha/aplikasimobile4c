@@ -1,5 +1,6 @@
 package com.example.aplikasimobile.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.aplikasimobile.R;
 import com.example.aplikasimobile.data.TaskRepository;
 import com.example.aplikasimobile.model.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
@@ -49,6 +51,10 @@ public class MainActivity extends AppCompatActivity {
         adapter = new TaskAdapter();
         recyclerTasks.setLayoutManager(new LinearLayoutManager(this));
         recyclerTasks.setAdapter(adapter);
+
+        FloatingActionButton fabAdd = findViewById(R.id.fab_add);
+        fabAdd.setOnClickListener(v ->
+                startActivity(new Intent(this, AddEditTaskActivity.class)));
     }
 
     @Override

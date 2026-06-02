@@ -68,4 +68,17 @@ public class TaskRepository {
     public void removeListener(@NonNull ValueEventListener listener) {
         tasksRef.removeEventListener(listener);
     }
+
+    /**
+     * Membuat tugas baru di {@code tasks/{pushId}} (PRD FR-1).
+     *
+     * <p>{@code push()} menghasilkan key unik berbasis timestamp sehingga urutan penambahan
+     * terjaga tanpa perlu mengelola id manual. Mengembalikan {@link com.google.android.gms.tasks.Task}
+     * agar pemanggil dapat memasang {@code addOnFailureListener}.</p>
+     */
+    public com.google.android.gms.tasks.Task<Void> create(@NonNull Task task) {
+        DatabaseReference newRef = tasksRef.push();
+        task.id = newRef.getKey();
+        return newRef.setValue(task);
+    }
 }

@@ -5,4 +5,24 @@
     <string name="empty_tasks">Belum ada tugas.\nTekan tombol + untuk menambah tugas pertamamu.</string>
     <string name="due_prefix">Tenggat: %1$s</string>
     <string name="error_load_tasks">Gagal memuat tugas: %1$s</string>
+
+    <!-- Tambah/Edit tugas (M2) -->
+    <string name="action_add_task">Tambah tugas</string>
+    <string name="title_add_task">Tambah Tugas</string>
+    <string name="hint_title">Judul</string>
+    <string name="hint_description">Deskripsi (opsional)</string>
+    <string name="label_priority">Prioritas</string>
+    <string name="label_due_date">Tenggat</string>
+    <string name="due_none">Tidak ada</string>
+    <string name="action_pick_date">Pilih Tanggal</string>
+    <string name="action_clear">Hapus</string>
+    <string name="action_save">Simpan</string>
+    <string name="error_title_required">Judul wajib diisi</string>
+    <string name="error_save_task">Gagal menyimpan: %1$s</string>
+
+    <string-array name="priority_labels">
+        <item>Rendah</item>
+        <item>Sedang</item>
+        <item>Tinggi</item>
+    </string-array>
 </resources>
